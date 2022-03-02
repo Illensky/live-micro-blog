@@ -22,10 +22,12 @@ class Role extends AbstractEntity
 
     /**
      * @param string $roleName
+     * @return Role
      */
-    public function setRoleName(string $roleName): void
+    public function setRoleName(string $roleName): self
     {
         $this->roleName = $roleName;
+        return $this;
     }
 
     /**
@@ -38,10 +40,12 @@ class Role extends AbstractEntity
 
     /**
      * @param array $users
+     * @return Role
      */
-    public function setUsers(array $users): void
+    public function setUsers(array $users): self
     {
         $this->users = $users;
+        return $this;
     }
 
 }

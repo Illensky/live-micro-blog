@@ -10,3 +10,6 @@ use App\Model\Manager\UserRoleManager;
 
 $roleManager = new RoleManager();
 dump($roleManager->getAll());
+
+$articleManager = new ArticleManager();
+dump($articleManager->getAll());
