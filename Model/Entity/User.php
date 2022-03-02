@@ -22,6 +22,7 @@ class user extends AbstractEntity
 
     /**
      * @param string $email
+     * @return user
      */
     public function setEmail(string $email): self
     {
