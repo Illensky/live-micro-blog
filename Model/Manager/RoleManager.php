@@ -2,33 +2,74 @@
 
 namespace App\Model\Manager;
 
+use App\Model\DB;
 use App\Model\DBSingleton;
 use App\Model\Entity\Role;
+use App\Model\Entity\User;
 
-class RoleManager
+final class RoleManager
 {
-    private UserRoleManager $userRoleManager;
+    public const TABLE = 'role';
+    public const ROLE_USER = 'user';
+    public const ROLE_MODERATOR = 'moderator';
 
-    public function __construct()
-    {
-        $this->userRoleManager = new UserRoleManager();
-    }
-
-    public function getAll(): array
+    public static function getAll(): array
     {
         $roles = [];
         $query = DBSingleton::PDO()->query("
-            SELECT * FROM role
-        ");
+            SELECT * FROM ". self::TABLE
+        );
         if ($query) {
             foreach ($query->fetchAll() as $roleData) {
-                $role = new Role();
-                $role->setId($roleData['id']);
-                $role->setRoleName($roleData['role_name']);
-                $role->setUsers($this->userRoleManager->getUsersByRoleId($roleData['id']));
-                $roles[] = $role;
+                $roles[] = (new Role())
+                ->setId($roleData['id'])
+                ->setRoleName($roleData['role_name'])
+                ;
             }
         }
         return $roles;
+    }
+
+    /**
+     * Return all given user roles.
+     * @param int $roleId
+     * @return array
+     */
+    public static function getRolesByUser(User $user): array
+    {
+        $roles = [];
+        $rolesQuery = DBSingleton::PDO()->query("
+            SELECT * FROM role WHERE id IN (SELECT role_fk FROM user_role WHERE user_fk = {$user->getId()});
+        ");
+
+        if($rolesQuery){
+            foreach($rolesQuery->fetchAll() as $roleData) {
+                $roles[] = (new Role())
+                    ->setId($roleData['id'])
+                    ->setRoleName($roleData['role_name'])
+                ;
+            }
+        }
+
+        return $roles;
+    }
+
+
+    /**
+     * Return a role by name.
+     * @param string $roleName
+     * @return Role
+     */
+    public static function getRoleByName(string $roleName): Role
+    {
+        $role = new Role();
+        $rQuery = DBSingleton::PDO()->query("
+            SELECT * FROM role WHERE role_name = '".$roleName."'
+        ");
+        if($rQuery && $roleData = $rQuery->fetch()) {
+            $role->setId($roleData['id']);
+            $role->setRoleName($roleData['role_name']);
+        }
+        return $role;
     }
 }

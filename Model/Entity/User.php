@@ -9,7 +9,7 @@ class user extends AbstractEntity
     private string $lastname;
     private string $password;
     private int $age;
-    private array $role;
+    private array $roles;
 
 
     /**
@@ -105,18 +105,18 @@ class user extends AbstractEntity
     /**
      * @return array
      */
-    public function getRole(): array
+    public function getRoles(): array
     {
-        return $this->role;
+        return $this->roles;
     }
 
     /**
-     * @param array $role
+     * @param array $roles
      * @return user
      */
-    public function setRole(array $role): self
+    public function setRoles(array $roles): self
     {
-        $this->role = $role;
+        $this->roles = $roles;
         return $this;
     }
 

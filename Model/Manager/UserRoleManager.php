@@ -6,24 +6,19 @@ use App\Model\DBSingleton;
 use App\Model\Entity\User;
 use App\Model\Entity\Role;
 
-class UserRoleManager
+final class UserRoleManager
 {
-    public function getUsersByRoleId(int $roleId): array
+    public const TABLE = 'user_role';
+
+    public static function getUsersByRole(Role $role): array
     {
         $users = [];
 
         $usersQuery = DBSingleton::PDO()->query("
                     SELECT * 
                     FROM user 
-                    WHERE id IN (SELECT user_fk FROM user_role WHERE role_fk = $roleId)
+                    WHERE id IN (SELECT user_fk FROM " . self::TABLE . " WHERE role_fk = {$role->getId()})
                     "
-                    /*
-                    "
-                    SELECT user.*
-                    FROM user_role
-                    LEFT JOIN user ON user_role.role_fk = $roleId
-                    "
-                    */
         );
 
         if ($usersQuery) {
@@ -38,13 +33,26 @@ class UserRoleManager
                 $users[] = $user;
             }
         }
-
         return $users;
     }
 
-    public function getRoleByUserId(): array
+    public static function getRolesByUser(User $user): array
     {
         $roles = [];
+        $query = DBSingleton::PDO()->query("
+            SELECT *
+            FROM role
+            WHERE id IN (SELECT role_fk FROM " . self::TABLE . " WHERE user_fk = {$user->getId()})
+        ");
+
+        if ($query) {
+            foreach ($query->fetchAll() as $roleData) {
+                $roles[] = (new Role())
+                    ->setId($roleData['id'])
+                    ->setRoleName($roleData['role_name'])
+                    ;
+            }
+        }
         return $roles;
     }
 }

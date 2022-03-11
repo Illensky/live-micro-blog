@@ -1,0 +1,38 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #FEFEFE;
+}
+
+input, label {
+    display: block;
+}
+
+form.container {
+    display: flex;
+}
+
+.alert {
+    position: relative;
+    left: 0;
+    top: 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    width: 100%;
+    border-bottom: 1px solid #FEFEFE;
+}
+
+.alert-error {
+    background-color: indianred;
+}
+
+.alert-success {
+    background-color: mediumseagreen;
+}
