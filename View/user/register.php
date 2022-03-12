@@ -14,14 +14,12 @@
         <input type="text" name="lastname" id="lastname">
     </div>
     <div>
-        <div>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-        </div>
-        <div>
-            <label for="password-repeat">Password repeat</label>
-            <input type="password" name="password-repeat" id="password-repeat">
-        </div>
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password">
+    </div>
+    <div>
+        <label for="password-repeat">Password repeat</label>
+        <input type="password" name="password-repeat" id="password-repeat">
     </div>
     <div>
         <label for="age">Age</label>

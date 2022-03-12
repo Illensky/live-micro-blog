@@ -59,7 +59,7 @@ if(isset($_SESSION['success'])) {
     </nav>
 </header>
 
-<main class="container">
+<main>
     <?= $html ?>
 </main>
 

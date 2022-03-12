@@ -14,7 +14,10 @@ class ArticleController extends AbstractController
 
     public static function listAllArticles()
     {
-
+        $articles = ArticleManager::getAll();
+        self::render("home/home", [
+            "articles" => $articles
+        ]);
     }
 
     /**
@@ -25,9 +28,8 @@ class ArticleController extends AbstractController
     {
         self::redirectIfNotGranted('editor');
 
-        if(self::isFormSubmitted()) {
+        if (self::isFormSubmitted()) {
             // Admettons que ce user ait été pris depuis la session.
-            dump($_SESSION['user']);
             $user = $_SESSION['user'];
 
             // Getting Article data from form.
@@ -36,14 +38,16 @@ class ArticleController extends AbstractController
 
             // Create a new Article entity (no persisted).
             $article = new Article();
+            $actualDate = new DateTime();
             $article
                 ->setTitle($title)
                 ->setContent($content)
                 ->setAuthor($user)
-            ;
+                ->setDateAdd($actualDate)
+                ->setDateUpdate($actualDate);
 
             // Saving new article.
-            if(ArticleManager::addNewArticle($article)) {
+            if (ArticleManager::addNewArticle($article)) {
                 self::render('article/show-article', [
                     'article' => $article,
                 ]);
@@ -52,6 +56,19 @@ class ArticleController extends AbstractController
         }
 
         self::render('article/add-article');
+    }
+
+    /**
+     * @param int $id
+     */
+    public static function showArticle (int $id) : void
+    {
+        self::redirectIfNotConnected();
+        $article = ArticleManager::getArticleById($id);
+        self::render('article/show-article', [
+            'article' => $article,
+        ]);
+        exit();
     }
 }
 

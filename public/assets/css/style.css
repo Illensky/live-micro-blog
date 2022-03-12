@@ -1,19 +1,123 @@
+/*Some variable for colors and sizes*/
+:root {
+    --error-color : indianred;
+    --success-color : mediumseagreen;
+    --main-text-color : white;
+    --main-bg-color : black;
+    --item-bg-color : darkgray;
+    --border-color : grey;
+}
+
+/*Basic css reset*/
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
+/*body style*/
+
 body {
-    background: #FEFEFE;
+    background: var(--main-bg-color);
+    color: var(--main-text-color);
 }
+
+/*Header / navBar style*/
+
+header {
+    background-color: var(--item-bg-color);
+    padding: 20px;
+}
+
+header > nav > ul {
+    display: flex;
+}
+
+header > nav > ul > li {
+    list-style-type: none;
+    padding-left: 2px;
+}
+
+header > nav > ul > li:hover {
+    transform: scale(1.1);
+}
+
+header > nav > ul > li > a {
+    text-decoration: none;
+    color: var(--main-text-color);
+    background-color: var(--main-bg-color);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+header > nav > ul > li > a:hover {
+    text-decoration: none;
+}
+
+/*Main container style*/
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/*Footer style*/
+
+footer {
+    background-color: var(--item-bg-color);
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+/*Links style*/
+
+a {
+    color: var(--main-text-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/*Table style*/
+
+thead > tr {
+    background-color: var(--item-bg-color);
+}
+
+tr:nth-child(even) {
+    background-color: var(--item-bg-color);
+}
+
+th, td {
+    padding: 3px;
+}
+
+/*Forms style*/
 
 input, label {
     display: block;
 }
 
-form.container {
+form {
     display: flex;
+    flex-direction: column;
 }
+
+form > div {
+    padding: 15px;
+}
+
+form > div > label {
+    padding: 5px;
+}
+
+/*Alert Message style*/
 
 .alert {
     position: relative;
@@ -23,16 +127,37 @@ form.container {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     font-weight: bold;
     width: 100%;
-    border-bottom: 1px solid #FEFEFE;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .alert-error {
-    background-color: indianred;
+    background-color: var(--error-color);
 }
 
 .alert-success {
-    background-color: mediumseagreen;
+    background-color: var(--success-color);
+}
+
+/*Article style*/
+
+.article-preview-div, .article-div {
+    width: 70%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.article-div {
+    width: 100%;
+}
+
+.article-preview-div > div , .article-div > div {
+    padding: 20px;
+}
+
+.article-title {
+    align-self: center;
 }

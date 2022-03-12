@@ -20,13 +20,12 @@ final class ArticleManager
         );
 
         if ($query) {
-            $userManager = new UserManager();
             $format = 'Y-m-d H:i:s';
 
             foreach ($query->fetchAll() as $articleData) {
                 $articles[] = (new Article())
                     ->setId($articleData['id'])
-                    ->setAuthor($userManager->getUserById($articleData['author']))
+                    ->setAuthor(UserManager::getUserById($articleData['user_fk']))
                     ->setContent($articleData['content'])
                     ->setDateAdd(DateTime::createFromFormat($format, $articleData['date_add']))
                     ->setDateUpdate(DateTime::createFromFormat($format, $articleData['date_update']))
@@ -35,6 +34,36 @@ final class ArticleManager
             }
         }
         return $articles;
+    }
+
+
+    /**
+     * @param int $articleId
+     * @return Article
+     */
+    public static function getArticleById (int $articleId) : Article
+    {
+        $article = new Article();
+
+        $query = DBSingleton::PDO()->query("
+            SELECT *
+            FROM " . self::TABLE . " WHERE id = " . $articleId
+        );
+
+        if ($query) {
+            $articleData = $query->fetch();
+            $format = 'Y-m-d H:i:s';
+            $article
+                ->setId($articleData['id'])
+                ->setAuthor(UserManager::getUserById($articleData['user_fk']))
+                ->setContent($articleData['content'])
+                ->setDateAdd(DateTime::createFromFormat($format, $articleData['date_add']))
+                ->setDateUpdate(DateTime::createFromFormat($format, $articleData['date_update']))
+                ->setTitle($articleData['title'])
+            ;
+        }
+
+        return $article;
     }
 
     /**
@@ -56,4 +85,6 @@ final class ArticleManager
         $article->setId(DBSingleton::PDO()->lastInsertId());
         return $result;
     }
+
+
 }

@@ -10,7 +10,7 @@ class Router
 
 // Display a 404 message if controller cannot be guessed.
 
-        if ($controller === "ErrorController") {
+        if ($controller === ErrorController::class) {
             $controller::error404($controllerStr);
             exit();
         }
