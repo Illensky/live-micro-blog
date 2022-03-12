@@ -6,6 +6,7 @@
     --main-bg-color : black;
     --item-bg-color : darkgray;
     --border-color : grey;
+    --footer-height : 10vh;
 }
 
 /*Basic css reset*/
@@ -21,6 +22,8 @@
 body {
     background: var(--main-bg-color);
     color: var(--main-text-color);
+    min-height: 100vh;
+    position: relative;
 }
 
 /*Header / navBar style*/
@@ -59,8 +62,9 @@ header > nav > ul > li > a:hover {
 main {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    padding-bottom: var(--footer-height);
 }
 
 /*Footer style*/
@@ -70,6 +74,9 @@ footer {
     display: flex;
     justify-content: space-around;
     width: 100%;
+    position: absolute;
+    bottom: 0;
+    height: var(--footer-height);
 }
 
 /*Links style*/
