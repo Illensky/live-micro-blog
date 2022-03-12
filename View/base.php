@@ -10,6 +10,8 @@
 </head>
 <body> <?php
 // Handling error messages.
+use App\Model\Entity\Role;
+
 if(isset($_SESSION['errors']) && count($_SESSION['errors']) > 0) {
     $errors = $_SESSION['errors'];
     unset($_SESSION['errors']);
@@ -30,8 +32,20 @@ if(isset($_SESSION['success'])) {
 <header>
     <nav>
         <ul>
+            <li><a href="/index.php" title="Acceuil">Acceuil</a></li>
+            <?php
+            $roles = UserController::getUserRolesNames();
+            if (in_array("admin", $roles)) {
+            ?>
             <li><a href="/index.php?c=user" title="Utilisateurs">Utilisateurs</a></li>
-            <li><a href="/index.php?c=article&m=add-article">Ajouter un article</a></li> <?php
+            <?php
+            }
+                if (in_array("editor", $roles)) {
+            ?>
+            <li><a href="/index.php?c=article&m=add-article">Ajouter un article</a></li>
+                    <?php
+            }
+
             if(!UserController::isUserConnected()) { ?>
                 <li><a href="/index.php?c=user&m=register">S'enregistrer</a></li>
                 <li><a href="/index.php?c=user&m=login">Se Connecter</a></li> <?php

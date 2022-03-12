@@ -10,13 +10,13 @@ $user = $data['user'];
 <p>Email: <?= $user->getEmail() ?></p>
 <p>Firstname: <?= $user->getFirstname() ?></p>
 <p>Lastname: <?= $user->getLastname() ?></p>
-<p>Password: <?= $user->getPassword() ?></p>
 <p>Age: <?= $user->getAge() ?></p>
 
 <div>
-<?php
+    <p><strong>Available roles:</strong></p>
+    <?php
     foreach ($user->getRoles() as $role) { ?>
-        <p><strong>Available roles:</strong></p>
+
         <p><?= $role->getRoleName() ?></p>
         <?php
     } ?>

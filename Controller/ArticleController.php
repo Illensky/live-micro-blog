@@ -23,7 +23,7 @@ class ArticleController extends AbstractController
      */
     public function addArticle()
     {
-        self::redirectIfNotConnected();
+        $this->redirectIfNotGranted('editor');
 
         if($this->isFormSubmitted()) {
             // Admettons que ce user ait été pris depuis la session.

@@ -12,6 +12,7 @@ class UserController extends AbstractController
      */
     public function index()
     {
+        $this->redirectIfNotGranted('admin');
         $this->render('user/users-list', [
             'users_list' => UserManager::getAll()
         ]);
@@ -23,6 +24,7 @@ class UserController extends AbstractController
      */
     public function showStats()
     {
+        $this->redirectIfNotGranted('admin');
         $this->render('user/statistics', [
             'users_count' => UserManager::getUsersCount(),
             'min_age' => UserManager::getMinAge()
@@ -37,6 +39,7 @@ class UserController extends AbstractController
      */
     public function showUser(int $id)
     {
+        $this->redirectIfNotGranted('admin');
         if(UserManager::userExists($id)) {
             $this->render('user/show-user', [
                 'user' => UserManager::getUserById($id),
@@ -50,6 +53,7 @@ class UserController extends AbstractController
 
     // TODO
     public function editUser(int $id) {
+        $this->redirectIfNotGranted('admin');
         echo "edit piaf";
         dump([
             '$id' => $id,
@@ -64,6 +68,7 @@ class UserController extends AbstractController
      */
     public function deleteUser(int $id)
     {
+        $this->redirectIfNotGranted('admin');
         if(UserManager::userExists($id)) {
             $user = UserManager::getUserById($id);
             $deleted = UserManager::deleteUser($user);

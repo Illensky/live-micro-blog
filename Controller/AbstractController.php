@@ -61,7 +61,7 @@ abstract class AbstractController
      */
     public function redirectIfNotConnected(): void
     {
-        if(!self::isUserConnected()) {
+        if (!self::isUserConnected()) {
             $this->render('home/home');
             exit();
         }
@@ -72,7 +72,7 @@ abstract class AbstractController
      */
     public function redirectIfConnected(): void
     {
-        if(self::isUserConnected()) {
+        if (self::isUserConnected()) {
             $this->render('home/home');
             exit();
         }
@@ -85,19 +85,32 @@ abstract class AbstractController
      */
     public function redirectIfNotGranted(string $role): void
     {
-        if(!self::isUserConnected()) {
+        if (!self::isUserConnected()) {
             $this->render('home/home');
             exit();
         }
 
-        $userRoles = array_map(function(Role $role2){
+        $userRoles = array_map(function (Role $role2) {
             return $role2->getRoleName();
         }, ($_SESSION['user'])->getRoles());
 
-        if(!in_array($role, $userRoles)) {
+        if (!in_array($role, $userRoles)) {
             $this->render('home/home');
             exit();
         }
     }
 
+    /**
+     * @return array
+     */
+    public static function getUserRolesNames(): array
+    {
+        $roles = [];
+        if (UserController::isUserConnected()) {
+            foreach ($_SESSION['user']->getRoles() as $role) {
+                $roles[] = $role->getRoleName();
+            }
+        }
+        return $roles;
+    }
 }
