@@ -4,7 +4,7 @@ use App\Model\Entity\Role;
 
 abstract class AbstractController
 {
-    abstract public function index();
+    abstract static public function index();
 
     /**
      * @param string $template
@@ -13,7 +13,7 @@ abstract class AbstractController
      */
 
 
-    public function render(string $template, array $data = [])
+    public static function render(string $template, array $data = [])
     {
         ob_start();
         require __DIR__ . '/../View/' . $template . '.php';
@@ -25,7 +25,7 @@ abstract class AbstractController
      * Return true if a form were submitted.
      * @return bool
      */
-    public function isFormSubmitted(): bool
+    public static function isFormSubmitted(): bool
     {
         return isset($_POST['save']);
     }
@@ -37,7 +37,7 @@ abstract class AbstractController
      * @param $default
      * @return void
      */
-    public function getFormField(string $field, $default = null)
+    public static function getFormField(string $field, $default = null)
     {
         if (!isset($_POST[$field])) {
             return (null === $default) ? '' : $default;
@@ -59,10 +59,10 @@ abstract class AbstractController
     /**
      * @return void
      */
-    public function redirectIfNotConnected(): void
+    public static function redirectIfNotConnected(): void
     {
         if (!self::isUserConnected()) {
-            $this->render('home/home');
+            self::render('home/home');
             exit();
         }
     }
@@ -70,10 +70,10 @@ abstract class AbstractController
     /**
      * @return void
      */
-    public function redirectIfConnected(): void
+    public static function redirectIfConnected(): void
     {
         if (self::isUserConnected()) {
-            $this->render('home/home');
+            self::render('home/home');
             exit();
         }
     }
@@ -83,10 +83,10 @@ abstract class AbstractController
      * @param string $role
      * @return void
      */
-    public function redirectIfNotGranted(string $role): void
+    public static function redirectIfNotGranted(string $role): void
     {
         if (!self::isUserConnected()) {
-            $this->render('home/home');
+            self::render('home/home');
             exit();
         }
 
@@ -95,7 +95,7 @@ abstract class AbstractController
         }, ($_SESSION['user'])->getRoles());
 
         if (!in_array($role, $userRoles)) {
-            $this->render('home/home');
+            self::render('home/home');
             exit();
         }
     }

@@ -6,8 +6,8 @@ class HomeController extends AbstractController
      * Home Page
      * @return void
      */
-    public function index()
+    public static function index()
     {
-        $this->render('home/home');
+        self::render('home/home');
     }
 }

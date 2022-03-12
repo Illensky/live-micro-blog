@@ -10,8 +10,8 @@ class Router
 
 // Display a 404 message if controller cannot be guessed.
 
-        if ($controller instanceof ErrorController) {
-            $controller->error404($controllerStr);
+        if ($controller === "ErrorController") {
+            $controller::error404($controllerStr);
             exit();
         }
 
@@ -20,7 +20,7 @@ class Router
         $method = self::guessMethod($controller, $method);
 
         if (null === $method) {
-            $controller->index();
+            $controller::index();
             exit();
         }
 
@@ -31,7 +31,7 @@ class Router
 // here we execute the method without param if the method don't take param
 
         if (count($parameters) === 0) {
-            $controller->$method();
+            $controller::$method();
             exit();
         }
 
@@ -43,7 +43,7 @@ class Router
             settype($var, $p['type']);
             $params[] = $var;
         }
-        $controller->$method(...$params);
+        $controller::$method(...$params);
         exit();
     }
 
@@ -64,7 +64,7 @@ class Router
     private static function guessController(string $controller)
     {
         $controller = ucfirst($controller) . "Controller";
-        return class_exists($controller) ? new $controller() : new ErrorController();
+        return class_exists($controller) ? $controller : "ErrorController";
     }
 
     /**
@@ -72,7 +72,7 @@ class Router
      * @param string $method
      * @return string|null
      */
-    private static function guessMethod(object $controller, ?string $method)
+    private static function guessMethod(string $controller, ?string $method)
     {
         $method = lcfirst(str_replace(' ', '', ucwords(str_replace('-', ' ', $method))));
         return method_exists($controller, $method) ? $method : null;
@@ -84,7 +84,7 @@ class Router
      * @return array
      * @throws ReflectionException
      */
-    private static function guessParams(AbstractController $controller, string $method): array
+    private static function guessParams(string $controller, string $method): array
     {
         $paramsArray = [];
         $reflexion = new ReflectionMethod($controller, $method);

@@ -10,10 +10,10 @@ class UserController extends AbstractController
     /**
      * UserController entry point - default action.
      */
-    public function index()
+    public static function index()
     {
-        $this->redirectIfNotGranted('admin');
-        $this->render('user/users-list', [
+        self::redirectIfNotGranted('admin');
+        self::render('user/users-list', [
             'users_list' => UserManager::getAll()
         ]);
     }
@@ -22,10 +22,10 @@ class UserController extends AbstractController
      * Fetch and display some users statistics.
      * @return void
      */
-    public function showStats()
+    public static function showStats()
     {
-        $this->redirectIfNotGranted('admin');
-        $this->render('user/statistics', [
+        self::redirectIfNotGranted('admin');
+        self::render('user/statistics', [
             'users_count' => UserManager::getUsersCount(),
             'min_age' => UserManager::getMinAge()
         ]);
@@ -37,23 +37,23 @@ class UserController extends AbstractController
      * @param int $id
      * @return void
      */
-    public function showUser(int $id)
+    public static function showUser(int $id)
     {
-        $this->redirectIfNotGranted('admin');
+        self::redirectIfNotGranted('admin');
         if(UserManager::userExists($id)) {
-            $this->render('user/show-user', [
+            self::render('user/show-user', [
                 'user' => UserManager::getUserById($id),
             ]);
         }
         else {
-            $this->index();
+            self::index();
         }
     }
 
 
     // TODO
-    public function editUser(int $id) {
-        $this->redirectIfNotGranted('admin');
+    public static function editUser(int $id) {
+        self::redirectIfNotGranted('admin');
         echo "edit piaf";
         dump([
             '$id' => $id,
@@ -66,30 +66,30 @@ class UserController extends AbstractController
      * @param int $id
      * @return void
      */
-    public function deleteUser(int $id)
+    public static function deleteUser(int $id)
     {
-        $this->redirectIfNotGranted('admin');
+        self::redirectIfNotGranted('admin');
         if(UserManager::userExists($id)) {
             $user = UserManager::getUserById($id);
             $deleted = UserManager::deleteUser($user);
         }
-        $this->index();
+        self::index();
    }
 
     /**
      * @return void
      */
-    public function register()
+    public static function register()
     {
         self::redirectIfConnected();
 
-        if($this->isFormSubmitted()) {
-            $mail = filter_var($this->getFormField('email'), FILTER_SANITIZE_STRING);
-            $firstname = filter_var($this->getFormField('firstname'), FILTER_SANITIZE_STRING);
-            $lastname = filter_var($this->getFormField('lastname'), FILTER_SANITIZE_STRING);
-            $password = $this->getFormField('password');
-            $passwordRepeat = $this->getFormField('password-repeat');
-            $age = (int)$this->getFormField('age');
+        if(self::isFormSubmitted()) {
+            $mail = filter_var(self::getFormField('email'), FILTER_SANITIZE_STRING);
+            $firstname = filter_var(self::getFormField('firstname'), FILTER_SANITIZE_STRING);
+            $lastname = filter_var(self::getFormField('lastname'), FILTER_SANITIZE_STRING);
+            $password = self::getFormField('password');
+            $passwordRepeat = self::getFormField('password-repeat');
+            $age = (int)self::getFormField('age');
 
             $errors = [];
             $mail = filter_var($mail, FILTER_SANITIZE_EMAIL);
@@ -158,7 +158,7 @@ class UserController extends AbstractController
             }
 
         }
-        $this->render('user/register');
+        self::render('user/register');
     }
 
 
@@ -166,7 +166,7 @@ class UserController extends AbstractController
      * User logout.
      * @return void
      */
-    public function logout(): void
+    public static function logout(): void
     {
         if(self::isUserConnected()) {
             $_SESSION = [];
@@ -175,7 +175,7 @@ class UserController extends AbstractController
             session_destroy();
         }
 
-        $this->render('home/home');
+        self::render('home/home');
     }
 
 
@@ -183,14 +183,14 @@ class UserController extends AbstractController
      * User login
      * @return void
      */
-    public function login()
+    public static function login()
     {
         self::redirectIfConnected();
 
-        if($this->isFormSubmitted()) {
+        if(self::isFormSubmitted()) {
             $errorMessage = "L'utilisateur / le password est mauvais";
-            $mail = filter_var($this->getFormField('email'), FILTER_SANITIZE_STRING);
-            $password = $this->getFormField('password');
+            $mail = filter_var(self::getFormField('email'), FILTER_SANITIZE_STRING);
+            $password = self::getFormField('password');
 
             $user = UserManager::getUserByMail($mail);
             if (null === $user) {
@@ -200,7 +200,7 @@ class UserController extends AbstractController
                 if (password_verify($password, $user->getPassword())) {
                     $user->setPassword('');
                     $_SESSION['user'] = $user;
-                    $this->redirectIfConnected();
+                    self::redirectIfConnected();
                     exit();
                 }
                 else {
@@ -209,6 +209,6 @@ class UserController extends AbstractController
             }
         }
 
-        $this->render('user/login');
+        self::render('user/login');
     }
 }
