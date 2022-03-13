@@ -2,14 +2,13 @@
 
 namespace App\Model\Manager;
 
-use App\Model\DB;
+use App\Model\Entity\Role;
 use App\Model\Entity\User;
 use App\Model\DBSingleton;
 
 final class UserManager
 {
     public const TABLE = 'user';
-    public const TABLE_USER_ROLE = 'user_role';
 
     /**
      * @param array $data
@@ -97,7 +96,7 @@ final class UserManager
      */
     public static function deleteUser(User $user): bool {
         if(self::userExists($user->getId())) {
-            return DBSingleton::PDO()->exec("
+            return (bool)DBSingleton::PDO()->query("
             DELETE FROM " . self::TABLE . " WHERE id = {$user->getId()}
         ");
         }
@@ -106,7 +105,7 @@ final class UserManager
 
     /**
      * Check if a user exists with its email.
-     * @param int $id
+     * @param string $mail
      * @return bool
      */
     public static function userMailExists(string $mail): bool
@@ -135,13 +134,100 @@ final class UserManager
         $result = $stmt->execute();
         $user->setId(DBSingleton::PDO()->lastInsertId());
         if($result) {
-            $role = RoleManager::getRoleByName(RoleManager::ROLE_USER);
-            $resultRole = DBSingleton::PDO()->exec("
-                INSERT INTO ".self::TABLE_USER_ROLE. " (user_fk, role_fk) VALUES (".$user->getId().", ".$role->getId().")
-            ");
-
+            $resultRole = UserRoleManager::addUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_USER));
         }
         return $result && $resultRole;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function editUserByAdmin(User $user) : bool
+    {
+        $stmt = DBSingleton::PDO()->prepare("
+        UPDATE user SET name = :name, surname = :surname, age = :age, email = :email
+        WHERE id = :id
+        ");
+
+        $stmt->bindValue(':name', $user->getLastname());
+        $stmt->bindValue(':surname', $user->getFirstname());
+        $stmt->bindValue(':age', $user->getAge());
+        $stmt->bindValue(':email', $user->getEmail());
+        $stmt->bindValue(':id', $user->getId());
+
+        $result = $stmt->execute();
+        if ($result) {
+            $rolesNames = [];
+            foreach ($user->getRoles() as $role) {
+                /* @var Role $role */
+                $rolesNames[] = $role->getRoleName();
+            }
+
+            $resultRole = true;
+
+            if (in_array('user', $rolesNames)) {
+                $resultRole = UserRoleManager::addUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_USER));
+            }
+            else {
+                $resultRole = UserRoleManager::removeUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_USER));
+            }
+
+            if (in_array('editor', $rolesNames)) {
+                $resultRole = UserRoleManager::addUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_EDITOR));
+            }
+            else {
+                $resultRole = UserRoleManager::removeUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_EDITOR));
+            }
+
+            if (in_array('admin', $rolesNames)) {
+                $resultRole = UserRoleManager::addUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_ADMIN));
+            }
+            else {
+                $resultRole = UserRoleManager::removeUserRole($user, RoleManager::getRoleByName(RoleManager::ROLE_ADMIN));
+            }
+        }
+
+        return $result && $resultRole;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
+     */
+    public static function editUserByUser(User $user) : bool
+    {
+        $stmt = DBSingleton::PDO()->prepare("
+        UPDATE ". self::TABLE ." SET name = :name, surname = :surname, age = :age, email = :email
+        WHERE id = :id
+        ");
+
+        $stmt->bindValue(':name', $user->getLastname());
+        $stmt->bindValue(':surname', $user->getFirstname());
+        $stmt->bindValue(':age', $user->getAge());
+        $stmt->bindValue(':email', $user->getEmail());
+        $stmt->bindValue(':id', $user->getId());
+
+        return $stmt->execute();
+    }
+
+
+    /**
+     * @param User $user
+     * @param string $password
+     * @return bool
+     */
+    public static function changePassword (User $user, string $password) : bool
+    {
+        $stmt = DBSingleton::PDO()->prepare("
+        UPDATE user SET password = :password
+        WHERE id = :id
+        ");
+
+        $stmt->bindValue(':password', $password);
+        $stmt->bindValue(':id', $user->getId());
+
+        return $stmt->execute();
     }
 
     /**

@@ -12,17 +12,17 @@
 // Handling error messages.
 use App\Model\Entity\Role;
 
-if(isset($_SESSION['errors']) && count($_SESSION['errors']) > 0) {
+if (isset($_SESSION['errors']) && count($_SESSION['errors']) > 0) {
     $errors = $_SESSION['errors'];
     unset($_SESSION['errors']);
 
-    foreach($errors as $error) { ?>
+    foreach ($errors as $error) { ?>
         <div class="alert alert-error"><?= $error ?></div> <?php
     }
 }
 
 // Handling sucecss messages.
-if(isset($_SESSION['success'])) {
+if (isset($_SESSION['success'])) {
     $message = $_SESSION['success'];
     unset($_SESSION['success']);
     ?>
@@ -34,24 +34,26 @@ if(isset($_SESSION['success'])) {
         <ul>
             <li><a href="/index.php" title="Acceuil">Acceuil</a></li>
             <?php
-            $roles = UserController::getUserRolesNames();
-            if (in_array("admin", $roles)) {
-            ?>
-            <li><a href="/index.php?c=user" title="Utilisateurs">Utilisateurs</a></li>
-            <?php
-            }
-                if (in_array("editor", $roles)) {
-            ?>
-            <li><a href="/index.php?c=article&m=add-article">Ajouter un article</a></li>
+            if (UserController::isUserConnected()) {
+                ?>
+                <li><a href="/index.php?c=user&m=logout">Se déconnecter</a></li>
+                <li><a href="/index.php?c=user&m=user-space">Votre espace</a></li>
+                <?php
+                $roles = UserController::getUserRolesNames($_SESSION['user']);
+                if (in_array("admin", $roles)) {
+                    ?>
+                    <li><a href="/index.php?c=user" title="Administration">Administration</a></li>
                     <?php
-            }
-
-            if(!UserController::isUserConnected()) { ?>
+                }
+                if (in_array("editor", $roles)) {
+                    ?>
+                    <li><a href="/index.php?c=article&m=add-article">Ajouter un article</a></li>
+                    <?php
+                }
+            } else { ?>
                 <li><a href="/index.php?c=user&m=register">S'enregistrer</a></li>
-                <li><a href="/index.php?c=user&m=login">Se Connecter</a></li> <?php
-            }
-            else { ?>
-                <li><a href="/index.php?c=user&m=logout">Se déconnecter</a></li> <?php
+                <li><a href="/index.php?c=user&m=login">Se Connecter</a></li>
+                <?php
             }
             ?>
 

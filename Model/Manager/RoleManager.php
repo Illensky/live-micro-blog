@@ -2,7 +2,6 @@
 
 namespace App\Model\Manager;
 
-use App\Model\DB;
 use App\Model\DBSingleton;
 use App\Model\Entity\Role;
 use App\Model\Entity\User;
@@ -11,7 +10,8 @@ final class RoleManager
 {
     public const TABLE = 'role';
     public const ROLE_USER = 'user';
-    public const ROLE_MODERATOR = 'moderator';
+    public const ROLE_EDITOR = 'editor';
+    public const ROLE_ADMIN = 'admin';
 
     public static function getAll(): array
     {

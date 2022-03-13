@@ -70,6 +70,64 @@ class ArticleController extends AbstractController
         ]);
         exit();
     }
+
+    public static function adminDeleteArticle (int $id) : void
+    {
+        self::redirectIfNotGranted('admin');
+        $article = ArticleManager::getArticleById($id);
+        ArticleManager::deleteArticle($article);
+        $_SESSION['success'] = "L'article as bien etait suprimmer";
+        UserController::showUser($article->getAuthor()->getId());
+    }
+
+    public static function deleteArticle (int $id) : void
+    {
+        self::redirectIfNotGranted('user');
+        $article = ArticleManager::getArticleById($id);
+        if ($_SESSION['user']->getId() === $article->getAuthor()->getId()) {
+            ArticleManager::deleteArticle($article);
+            $_SESSION['success'] = "Votre article as bien etait suprimmer";
+        }
+        else {
+            $_SESSION['error'][] = "Erreur : Vous n'etes pas l'auteur de cet article";
+        }
+        HomeController::index();
+    }
+
+    public static function editArticle (int $id) : void
+    {
+        self::redirectIfNotGranted('user');
+        $article = ArticleManager::getArticleById($id);
+        if ($_SESSION['user']->getId() === $article->getAuthor()->getId()) {
+            self::render('article/edit-article', [
+                'article' => $article
+            ]);
+            exit();
+        }
+        else {
+            $_SESSION['error'][] = "Erreur : Vous n'etes pas l'auteur de ce commentaire";
+        }
+        self::showArticle($article->getId());
+    }
+
+    public static function saveArticleEdit (int $id) : void
+    {
+        self::redirectIfNotGranted('user');
+        $article = ArticleManager::getArticleById($id);
+        if (!$_SESSION['user']->getId() === $article->getAuthor()->getId()) {
+            $_SESSION['error'][] = "Erreur : Vous n'êtes pas l'auteur de cet article";
+        }
+        if (self::isFormSubmitted()) {
+            $content = filter_var(self::getFormField('content'), FILTER_SANITIZE_STRING);
+            $title = filter_var(self::getFormField('title'), FILTER_SANITIZE_STRING);
+            ArticleManager::editArticle($article, $content, $title);
+            $_SESSION['success'] = "Votre article as bien était modifié";
+        }
+        else {
+            $_SESSION['error'][] = "Erreur : Un formulaire est manquant";
+        }
+        self::showArticle($article->getId());
+    }
 }
 
 

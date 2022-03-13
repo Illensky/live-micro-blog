@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\Entity\Role;
+use App\Model\Entity\user;
 
 abstract class AbstractController
 {
@@ -62,7 +63,7 @@ abstract class AbstractController
     public static function redirectIfNotConnected(): void
     {
         if (!self::isUserConnected()) {
-            self::render('home/home');
+            HomeController::index();
             exit();
         }
     }
@@ -73,7 +74,7 @@ abstract class AbstractController
     public static function redirectIfConnected(): void
     {
         if (self::isUserConnected()) {
-            self::render('home/home');
+            HomeController::index();
             exit();
         }
     }
@@ -86,7 +87,7 @@ abstract class AbstractController
     public static function redirectIfNotGranted(string $role): void
     {
         if (!self::isUserConnected()) {
-            self::render('home/home');
+            HomeController::index();
             exit();
         }
 
@@ -95,22 +96,21 @@ abstract class AbstractController
         }, ($_SESSION['user'])->getRoles());
 
         if (!in_array($role, $userRoles)) {
-            self::render('home/home');
+            HomeController::index();
             exit();
         }
     }
 
     /**
+     * @param user $user
      * @return array
      */
-    public static function getUserRolesNames(): array
+    public static function getUserRolesNames(User $user): array
     {
         $roles = [];
-        if (UserController::isUserConnected()) {
-            foreach ($_SESSION['user']->getRoles() as $role) {
+            foreach ($user->getRoles() as $role) {
                 $roles[] = $role->getRoleName();
             }
-        }
         return $roles;
     }
 }

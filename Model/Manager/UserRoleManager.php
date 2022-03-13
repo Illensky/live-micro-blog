@@ -36,6 +36,15 @@ final class UserRoleManager
         return $users;
     }
 
+    public static function userRoleExist(User $user, Role $role)
+    {
+        $result = DBSingleton::PDO()->query("
+        SELECT count(*) as cnt FROM " . self::TABLE . " 
+        WHERE user_fk = ".$user->getId()." AND role_fk = ".$role->getId()
+        );
+        return $result ? $result->fetch()['cnt'] : 0;
+    }
+
     public static function getRolesByUser(User $user): array
     {
         $roles = [];
@@ -54,5 +63,31 @@ final class UserRoleManager
             }
         }
         return $roles;
+    }
+
+    /**
+     * @param User $user
+     * @param Role $role
+     * @return bool
+     */
+    public static function addUserRole (User $user, Role $role) : bool
+    {
+        if (!self::userRoleExist($user, $role)) {
+            return DBSingleton::PDO()->exec("
+                INSERT INTO ".self::TABLE. " (user_fk, role_fk) VALUES (".$user->getId().", ".$role->getId().")
+            ");
+        }
+        return false;
+    }
+
+    public static function removeUserRole (User $user, Role $role)
+    {
+        if (self::userRoleExist($user, $role)) {
+            return (bool)DBSingleton::PDO()->exec("
+                DELETE FROM ".self::TABLE. " 
+                WHERE user_fk = ".$user->getId()." AND role_fk = ".$role->getId()
+            );
+        }
+        return false;
     }
 }
